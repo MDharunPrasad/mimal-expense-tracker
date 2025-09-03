@@ -18,21 +18,6 @@ export function MonthlyChart({ data, categories, currencySymbol }: MonthlyChartP
 
   const chartData = data.slice(0, 10); // Top 10 categories
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-card border border-border rounded-lg shadow-lg p-3">
-          <p className="font-medium">{data.categoryName}</p>
-          <p className="text-sm text-muted-foreground">
-            {formatCurrency(data.amount, currencySymbol)} ({data.percentage.toFixed(1)}%)
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   if (chartData.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-muted-foreground">
@@ -74,7 +59,7 @@ export function MonthlyChart({ data, categories, currencySymbol }: MonthlyChartP
         {chartType === 'bar' ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis 
                 dataKey="categoryName"
                 tick={{ fontSize: 12 }}
@@ -83,6 +68,15 @@ export function MonthlyChart({ data, categories, currencySymbol }: MonthlyChartP
                 height={60}
               />
               <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip 
+                formatter={(value: number) => [formatCurrency(value, currencySymbol), 'Amount']}
+                labelStyle={{ color: 'hsl(var(--foreground))' }}
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--card))', 
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '6px'
+                }}
+              />
               <Bar 
                 dataKey="amount" 
                 fill="hsl(var(--primary))"
@@ -109,7 +103,14 @@ export function MonthlyChart({ data, categories, currencySymbol }: MonthlyChartP
                   />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip 
+                formatter={(value: number) => [formatCurrency(value, currencySymbol), 'Amount']}
+                contentStyle={{ 
+                  backgroundColor: 'hsl(var(--card))', 
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '6px'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         )}
