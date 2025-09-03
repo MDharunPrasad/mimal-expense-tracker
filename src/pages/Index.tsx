@@ -1,7 +1,7 @@
-import { ExpenseApp } from '@/components/ExpenseApp';
+import { SimpleExpenseApp } from '@/components/SimpleExpenseApp';
 
 const Index = () => {
-  return <ExpenseApp />;
+  return <SimpleExpenseApp />;
 };
 
 export default Index;
