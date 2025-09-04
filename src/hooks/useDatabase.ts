@@ -37,8 +37,11 @@ export function useDatabase() {
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isInitialized } = useDatabase();
 
   const refreshCategories = useCallback(async () => {
+    if (!isInitialized) return;
+    
     try {
       const data = await database.getCategories();
       setCategories(data);
@@ -52,7 +55,7 @@ export function useCategories() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isInitialized]);
 
   const addCategory = useCallback(async (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
@@ -114,8 +117,10 @@ export function useCategories() {
   }, [refreshCategories]);
 
   useEffect(() => {
-    refreshCategories();
-  }, [refreshCategories]);
+    if (isInitialized) {
+      refreshCategories();
+    }
+  }, [refreshCategories, isInitialized]);
 
   return {
     categories,
@@ -137,8 +142,11 @@ export function useTransactions(filters?: {
 }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isInitialized } = useDatabase();
 
   const refreshTransactions = useCallback(async () => {
+    if (!isInitialized) return;
+    
     try {
       const data = await database.getTransactions(filters);
       setTransactions(data);
@@ -152,7 +160,7 @@ export function useTransactions(filters?: {
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, [filters, isInitialized]);
 
   const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
@@ -214,8 +222,10 @@ export function useTransactions(filters?: {
   }, [refreshTransactions]);
 
   useEffect(() => {
-    refreshTransactions();
-  }, [refreshTransactions]);
+    if (isInitialized) {
+      refreshTransactions();
+    }
+  }, [refreshTransactions, isInitialized]);
 
   return {
     transactions,
@@ -231,8 +241,11 @@ export function useTransactions(filters?: {
 export function useSettings() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { isInitialized } = useDatabase();
 
   const refreshSettings = useCallback(async () => {
+    if (!isInitialized) return;
+    
     try {
       const data = await database.getSettings();
       setSettings(data);
@@ -246,7 +259,7 @@ export function useSettings() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isInitialized]);
 
   const updateSettings = useCallback(async (updates: Partial<Settings>) => {
     try {
@@ -270,8 +283,10 @@ export function useSettings() {
   }, [settings]);
 
   useEffect(() => {
-    refreshSettings();
-  }, [refreshSettings]);
+    if (isInitialized) {
+      refreshSettings();
+    }
+  }, [refreshSettings, isInitialized]);
 
   return {
     settings,
