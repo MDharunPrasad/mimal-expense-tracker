@@ -1,7 +1,7 @@
-import { SimpleExpenseApp } from '@/components/SimpleExpenseApp';
+import { FinanceDashboard } from '@/components/FinanceDashboard';
 
 const Index = () => {
-  return <SimpleExpenseApp />;
+  return <FinanceDashboard />;
 };
 
 export default Index;
