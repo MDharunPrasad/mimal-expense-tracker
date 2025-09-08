@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Edit3, Search, Filter } from 'lucide-react';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { Trash2, Edit3, Search } from 'lucide-react';
 import { useTransactions, useCategories, useSettings } from '@/hooks/useDatabase';
 import { formatCurrency } from '@/lib/utils';
 
@@ -13,6 +14,7 @@ export function TransactionsManager() {
   const { settings } = useSettings();
   
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: string }>({ open: false });
   const [editData, setEditData] = useState({
     amount: '',
     reason: '',
@@ -57,10 +59,15 @@ export function TransactionsManager() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Delete this transaction?')) {
+  const handleDelete = (id: string) => {
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (deleteDialog.id) {
       try {
-        await deleteTransaction(id);
+        await deleteTransaction(deleteDialog.id);
+        setDeleteDialog({ open: false });
       } catch (error) {
         console.error('Error deleting transaction:', error);
       }
@@ -70,15 +77,15 @@ export function TransactionsManager() {
   if (!settings) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Manage Transactions</h1>
-        <p className="text-muted-foreground">Edit or delete your transactions</p>
+        <h1 className="text-3xl font-bold">Manage Transactions</h1>
+        <p className="text-muted-foreground mt-1">Edit or delete your transactions</p>
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -130,7 +137,7 @@ export function TransactionsManager() {
       </Card>
 
       {/* Transactions Table */}
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle>Transactions ({filteredTransactions.length})</CardTitle>
         </CardHeader>
@@ -139,11 +146,11 @@ export function TransactionsManager() {
             <table className="w-full">
               <thead className="border-b bg-muted/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Category</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Description</th>
+                  <th className="px-6 py-4 text-right text-sm font-medium text-muted-foreground">Amount</th>
+                  <th className="px-6 py-4 text-center text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -154,14 +161,14 @@ export function TransactionsManager() {
                   
                   return (
                     <tr key={transaction.id} className="hover:bg-muted/50">
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {new Date(transaction.happenedAt).toLocaleDateString('en-IN', { 
                           day: '2-digit', 
                           month: 'short',
                           year: 'numeric'
                         })}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         {isEditing ? (
                           <Select value={editData.categoryId} onValueChange={(value) => setEditData({...editData, categoryId: value})}>
                             <SelectTrigger className="w-full">
@@ -191,7 +198,7 @@ export function TransactionsManager() {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         {isEditing ? (
                           <Input
                             value={editData.reason}
@@ -202,7 +209,7 @@ export function TransactionsManager() {
                           transaction.reason || 'No description'
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-6 py-4 text-right">
                         {isEditing ? (
                           <Input
                             type="number"
@@ -217,7 +224,7 @@ export function TransactionsManager() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           {isEditing ? (
                             <>
@@ -229,18 +236,18 @@ export function TransactionsManager() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 hover:bg-muted"
                                 onClick={() => handleEdit(transaction)}
                               >
-                                <Edit3 className="w-3 h-3" />
+                                <Edit3 className="w-4 h-4" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => handleDelete(transaction.id)}
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </>
                           )}
@@ -253,14 +260,25 @@ export function TransactionsManager() {
             </table>
             
             {filteredTransactions.length === 0 && (
-              <div className="p-8 text-center text-muted-foreground">
-                <p>No transactions found</p>
+              <div className="p-12 text-center text-muted-foreground">
+                <p className="font-medium">No transactions found</p>
                 <p className="text-sm">Try adjusting your filters</p>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false })}
+        onConfirm={confirmDelete}
+        title="Delete Transaction"
+        description="Are you sure you want to delete this transaction? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+      />
     </div>
   );
 }

@@ -52,10 +52,10 @@ export function BalanceSettings() {
   if (!settings) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold">Balance Settings</h1>
-        <p className="text-muted-foreground">Adjust your current balance and manage corrections</p>
+        <h1 className="text-3xl font-bold">Balance Settings</h1>
+        <p className="text-muted-foreground mt-1">Adjust your current balance and manage corrections</p>
       </div>
 
       {/* Current Balance Display */}
@@ -71,7 +71,7 @@ export function BalanceSettings() {
       </Card>
 
       {/* Balance Adjustment Form */}
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="w-5 h-5" />
@@ -79,7 +79,7 @@ export function BalanceSettings() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAdjustment} className="space-y-4">
+          <form onSubmit={handleAdjustment} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Select value={adjustmentType} onValueChange={(value: 'add' | 'subtract') => setAdjustmentType(value)}>
                 <SelectTrigger>
@@ -132,85 +132,6 @@ export function BalanceSettings() {
               )}
             </Button>
           </form>
-        </CardContent>
-      </Card>
-
-      {/* Quick Adjustments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Adjustments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {quickAdjustments.map((adjustment, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="h-auto p-4 justify-start"
-                onClick={() => {
-                  setAmount(adjustment.amount.toString());
-                  setReason(adjustment.reason);
-                  setAdjustmentType('add');
-                }}
-              >
-                <div className="text-left">
-                  <div className="font-medium">{adjustment.label}</div>
-                  <div className="text-sm text-muted-foreground">
-                    +{formatCurrency(adjustment.amount, settings.currencySymbol)}
-                  </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Balance Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5" />
-            Important Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium mb-2">When to Adjust Balance:</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Setting up your initial balance</li>
-                <li>• Found untracked cash or money</li>
-                <li>• Bank interest or dividends</li>
-                <li>• Correcting calculation errors</li>
-                <li>• Gifts or unexpected income</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-medium mb-2">Current Month Summary:</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Income:</span>
-                  <span className="text-success font-medium">
-                    +{formatCurrency(balance.thisMonth.income, settings.currencySymbol)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Expenses:</span>
-                  <span className="text-destructive font-medium">
-                    -{formatCurrency(balance.thisMonth.expense, settings.currencySymbol)}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t pt-2">
-                  <span className="text-muted-foreground">Net This Month:</span>
-                  <span className={`font-medium ${balance.thisMonth.net >= 0 ? 'text-success' : 'text-destructive'}`}>
-                    {balance.thisMonth.net >= 0 ? '+' : ''}
-                    {formatCurrency(balance.thisMonth.net, settings.currencySymbol)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

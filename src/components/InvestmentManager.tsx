@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, TrendingUp, TrendingDown } from 'lucide-react';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
+import { Trash2, Plus, TrendingUp } from 'lucide-react';
 import { useTransactions, useSettings } from '@/hooks/useDatabase';
 import { formatCurrency } from '@/lib/utils';
 
@@ -24,6 +25,7 @@ export function InvestmentManager() {
   const { settings } = useSettings();
   
   const [showForm, setShowForm] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id?: string }>({ open: false });
   const [formData, setFormData] = useState({
     type: '',
     amount: '',
@@ -63,10 +65,15 @@ export function InvestmentManager() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Delete this investment record?')) {
+  const handleDelete = (id: string) => {
+    setDeleteDialog({ open: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (deleteDialog.id) {
       try {
-        await deleteTransaction(id);
+        await deleteTransaction(deleteDialog.id);
+        setDeleteDialog({ open: false });
       } catch (error) {
         console.error('Error deleting investment:', error);
       }
@@ -78,21 +85,21 @@ export function InvestmentManager() {
   if (!settings) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 p-6">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Investment Portfolio</h1>
-          <p className="text-muted-foreground">Track your investments across different asset classes</p>
+          <h1 className="text-3xl font-bold">Investment Portfolio</h1>
+          <p className="text-muted-foreground mt-1">Track your investments across different asset classes</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-4 w-4 mr-2" />
+        <Button onClick={() => setShowForm(!showForm)} className="gap-2">
+          <Plus className="h-4 w-4" />
           Add Investment
         </Button>
       </div>
 
       {/* Portfolio Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
@@ -108,7 +115,7 @@ export function InvestmentManager() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
@@ -118,13 +125,13 @@ export function InvestmentManager() {
                 </div>
               </div>
               <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
-                <Badge className="text-lg">💼</Badge>
+                <span className="text-2xl">💼</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
@@ -138,7 +145,7 @@ export function InvestmentManager() {
                 </div>
               </div>
               <div className="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center">
-                <Badge className="text-lg">📊</Badge>
+                <span className="text-2xl">📊</span>
               </div>
             </div>
           </CardContent>
@@ -147,12 +154,12 @@ export function InvestmentManager() {
 
       {/* Add Investment Form */}
       {showForm && (
-        <Card>
+        <Card className="border-0 shadow-sm">
           <CardHeader>
             <CardTitle>Add New Investment</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
                   <SelectTrigger>
@@ -193,7 +200,7 @@ export function InvestmentManager() {
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-3 pt-2">
                 <Button type="submit">Add Investment</Button>
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                   Cancel
@@ -205,7 +212,7 @@ export function InvestmentManager() {
       )}
 
       {/* Investments List */}
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle>Investment History</CardTitle>
         </CardHeader>
@@ -214,11 +221,11 @@ export function InvestmentManager() {
             <table className="w-full">
               <thead className="border-b bg-muted/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Type</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Date</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Type</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Description</th>
+                  <th className="px-6 py-4 text-right text-sm font-medium text-muted-foreground">Amount</th>
+                  <th className="px-6 py-4 text-center text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -230,35 +237,35 @@ export function InvestmentManager() {
                   
                   return (
                     <tr key={investment.id} className="hover:bg-muted/50">
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {new Date(investment.happenedAt).toLocaleDateString('en-IN', { 
                           day: '2-digit', 
                           month: 'short',
                           year: 'numeric'
                         })}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <Badge variant="secondary" className="text-xs">
                           {type}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-sm">
+                      <td className="px-6 py-4 text-sm">
                         {description || 'No description'}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-6 py-4 text-right">
                         <span className="font-medium text-primary">
                           {formatCurrency(investment.amount / 100, settings.currencySymbol)}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center justify-center">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => handleDelete(investment.id)}
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </td>
@@ -269,7 +276,7 @@ export function InvestmentManager() {
             </table>
             
             {investments.length === 0 && (
-              <div className="p-8 text-center text-muted-foreground">
+              <div className="p-12 text-center text-muted-foreground">
                 <TrendingUp className="w-16 h-16 mx-auto mb-4 opacity-30" />
                 <h3 className="text-lg font-medium mb-2">No Investments Yet</h3>
                 <p>Start building your portfolio by adding your first investment</p>
@@ -278,6 +285,17 @@ export function InvestmentManager() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false })}
+        onConfirm={confirmDelete}
+        title="Delete Investment"
+        description="Are you sure you want to delete this investment record? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+      />
     </div>
   );
 }
