@@ -19,16 +19,16 @@ export function TransactionsManager() {
     categoryId: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
-  const [filterType, setFilterType] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterType, setFilterType] = useState('all');
 
   const filteredTransactions = transactions?.filter(transaction => {
     const matchesSearch = !searchTerm || 
       (transaction.reason?.toLowerCase().includes(searchTerm.toLowerCase()) ||
        categories?.find(c => c.id === transaction.categoryId)?.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = !filterCategory || transaction.categoryId === filterCategory;
-    const matchesType = !filterType || transaction.flow === filterType;
+    const matchesCategory = filterCategory === 'all' || transaction.categoryId === filterCategory;
+    const matchesType = filterType === 'all' || transaction.flow === filterType;
     
     return matchesSearch && matchesCategory && matchesType;
   }) || [];
@@ -95,7 +95,7 @@ export function TransactionsManager() {
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All categories</SelectItem>
+                <SelectItem value="all">All categories</SelectItem>
                 {categories?.map(cat => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.emoji} {cat.name}
@@ -109,7 +109,7 @@ export function TransactionsManager() {
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All types</SelectItem>
+                <SelectItem value="all">All types</SelectItem>
                 <SelectItem value="expense">Expenses</SelectItem>
                 <SelectItem value="income">Income</SelectItem>
               </SelectContent>
@@ -119,8 +119,8 @@ export function TransactionsManager() {
               variant="outline" 
               onClick={() => {
                 setSearchTerm('');
-                setFilterCategory('');
-                setFilterType('');
+                setFilterCategory('all');
+                setFilterType('all');
               }}
             >
               Clear Filters
