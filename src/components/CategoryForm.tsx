@@ -42,7 +42,7 @@ export function CategoryForm({ category, onClose, existingCategories }: Category
     },
   });
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: z.infer<typeof categorySchema>) => {
     try {
       if (isEditing) {
         await updateCategory(category.id, data);

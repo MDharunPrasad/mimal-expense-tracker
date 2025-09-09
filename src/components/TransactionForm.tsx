@@ -40,7 +40,7 @@ const paymentMethodOptions = [
 
 const flowOptions = [
   { value: 'expense', label: '📤 Expense', color: 'destructive' },
-  { value: 'income', label: '📥 Income', color: 'success' },
+  { value: 'income', label: '📥 Income', color: 'default' },
   { value: 'adjustment', label: '⚖️ Adjustment', color: 'secondary' },
 ] as const;
 
@@ -131,7 +131,7 @@ export function TransactionForm({
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex items-center gap-2">
                       <span>{option.label}</span>
-                      <Badge variant={option.color as any} className="text-xs">
+                      <Badge variant={option.color as 'default' | 'secondary' | 'destructive'} className="text-xs">
                         {option.value}
                       </Badge>
                     </div>

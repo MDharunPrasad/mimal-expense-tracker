@@ -8,6 +8,7 @@ import { SpendingSuggestions } from './SpendingSuggestions';
 import { AdjustBalanceDialog } from './AdjustBalanceDialog';
 import { TransactionForm } from './TransactionForm';
 import { useCategories, useTransactions, useAnalytics, useSettings } from '@/hooks/useDatabase';
+import { Transaction } from '@/types';
 import { Plus, TrendingUp, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatCurrency, getMonthName } from '@/lib/utils';
 
@@ -36,7 +37,7 @@ export function Dashboard() {
     });
   };
 
-  const handleAddTransaction = async (transactionData: any) => {
+  const handleAddTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     await addTransaction(transactionData);
     setShowTransactionForm(false);
   };

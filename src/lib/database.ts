@@ -85,7 +85,7 @@ class Database {
   async updateCategory(id: string, updates: Partial<Omit<Category, 'id' | 'createdAt'>>): Promise<Category> {
     if (!this.db) throw new Error('Database not initialized');
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['categories'], 'readwrite');
       const store = transaction.objectStore('categories');
       
@@ -193,7 +193,7 @@ class Database {
   async updateTransaction(id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>): Promise<Transaction> {
     if (!this.db) throw new Error('Database not initialized');
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['transactions'], 'readwrite');
       const store = transaction.objectStore('transactions');
       

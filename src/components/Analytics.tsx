@@ -15,10 +15,10 @@ export function Analytics() {
   const { categories } = useCategories();
   const { settings } = useSettings();
 
-  const months = [
+  const months = useMemo(() => [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  ], []);
 
   const availableYears = useMemo(() => {
     if (!transactions) return [new Date().getFullYear()];

@@ -154,7 +154,7 @@ export function formatDate(date: Date | string, format: 'short' | 'long' | 'rela
         month: 'long', 
         day: 'numeric' 
       });
-    case 'relative':
+    case 'relative': {
       const now = new Date();
       const diffInDays = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
       
@@ -163,6 +163,7 @@ export function formatDate(date: Date | string, format: 'short' | 'long' | 'rela
       if (diffInDays < 7) return `${diffInDays} days ago`;
       if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
       return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    }
     default:
       return d.toLocaleDateString('en-IN', { 
         month: 'short', 
@@ -173,7 +174,7 @@ export function formatDate(date: Date | string, format: 'short' | 'long' | 'rela
 }
 
 // Debounce function for search
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

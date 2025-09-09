@@ -7,6 +7,7 @@ import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Trash2, Edit3, Search } from 'lucide-react';
 import { useTransactions, useCategories, useSettings } from '@/hooks/useDatabase';
 import { formatCurrency } from '@/lib/utils';
+import { Transaction } from '@/types';
 
 export function TransactionsManager() {
   const { transactions, deleteTransaction, updateTransaction } = useTransactions();
@@ -35,7 +36,7 @@ export function TransactionsManager() {
     return matchesSearch && matchesCategory && matchesType;
   }) || [];
 
-  const handleEdit = (transaction: any) => {
+  const handleEdit = (transaction: Transaction) => {
     setEditingId(transaction.id);
     setEditData({
       amount: (transaction.amount / 100).toString(),

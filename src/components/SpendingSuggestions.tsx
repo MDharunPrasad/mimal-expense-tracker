@@ -109,7 +109,7 @@ export function SpendingSuggestions({ categorySpending, categories, currencySymb
                     className="h-2"
                     style={{
                       '--progress-background': item.categoryColor,
-                    } as any}
+                    } as React.CSSProperties & { [key: string]: string }}
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{item.transactionCount} transaction{item.transactionCount !== 1 ? 's' : ''}</span>

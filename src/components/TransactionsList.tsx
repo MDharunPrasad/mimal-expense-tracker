@@ -39,7 +39,7 @@ export function TransactionsList() {
   } = useTransactions();
 
   const filteredAndSortedTransactions = useMemo(() => {
-    let filtered = transactions.filter(transaction => {
+    const filtered = transactions.filter(transaction => {
       // Search in reason/notes
       if (searchQuery && !transaction.reason?.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
@@ -75,7 +75,7 @@ export function TransactionsList() {
     return filtered;
   }, [transactions, searchQuery, selectedCategory, selectedFlow, selectedPaymentMethod, sortBy]);
 
-  const handleSubmit = async (transactionData: any) => {
+  const handleSubmit = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (editingTransaction) {
       await updateTransaction(editingTransaction.id, transactionData);
     } else {
